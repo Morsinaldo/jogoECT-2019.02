@@ -1,0 +1,30 @@
+//Celi Beatriz Costa Lopes
+//Morsinaldo de Azevedo Medeiros
+//Etapas 1 e 2
+
+let x = 50;
+let y = 50;
+
+function setup() {
+  createCanvas(400, 400);
+}
+
+function draw() {
+  background(220);
+  
+  if(keyIsDown(LEFT_ARROW) && x >= 30){
+    x -= 5;
+  }
+  if(keyIsDown(RIGHT_ARROW) && x <= 370){
+    x += 5;
+  }
+  if(keyIsDown(UP_ARROW) && y >= 30){
+    y -= 5;
+  }
+  if(keyIsDown(DOWN_ARROW) && y <= 370){
+    y += 5;
+  }
+  
+  ellipse(x,y,50,50)  
+  square(100, 30, 40)
+}
