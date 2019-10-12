@@ -2,8 +2,14 @@
 //Morsinaldo de Azevedo Medeiros
 //Etapas 1 e 2
 
-let x = 50;
-let y = 50;
+var x = 50;
+var y = 50;
+var x0 = 0;
+var y0 = 30;
+var cont = 0;
+var xd = 0;
+var yd = 0;
+var estadoDisparo = false;
 
 function setup() {
   createCanvas(400, 400);
@@ -12,6 +18,8 @@ function setup() {
 function draw() {
   background(220);
   
+  ellipse(x,y,50,50);
+  //Movimentação ellipse
   if(keyIsDown(LEFT_ARROW) && x >= 30){
     x -= 5;
   }
@@ -25,6 +33,25 @@ function draw() {
     y += 5;
   }
   
-  ellipse(x,y,50,50)  
-  square(100, 30, 40)
+  //Disparo
+  if(keyIsDown(CONTROL) && estadoDisparo == false){
+    xd = x;
+    yd = y;
+    estadoDisparo = true;
+  }
+  if(estadoDisparo){
+    ellipse(xd,yd - 30,4,4);
+    yd -= 10
+    if(yd < 0){
+      estadoDisparo = false
+    }
+  }
+ 
+  square(x0, y0, 40);
+  //Movimentação Quadrado1
+  x0 += 5;
+  if(x0 > 500){
+    x0 = -random(600);
+    y0 = random(360)
+  }  
 }
