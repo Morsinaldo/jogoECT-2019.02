@@ -1,24 +1,34 @@
 //Celi Beatriz Costa Lopes
 //Morsinaldo de Azevedo Medeiros
-//Etapas 1 e 2
+//Etapa 5 e 6
 
 var x = 50;
 var y = 50;
 var x0 = 0;
 var y0 = 30;
+var xi = 150;
+var yi = 150;
 var cont = 0;
 var xd = 0;
 var yd = 0;
 var estadoDisparo = false;
+var vidas = 3;
+var pont = 0;
+var nivel = 1;
+var raioP = 25
+var raioI = 28;
+
 
 function setup() {
-  createCanvas(400, 400);
+  createCanvas(500,500);
 }
+
 
 function draw() {
   background(220);
   
-  ellipse(x,y,50,50);
+  ellipse(x,y, 2*raioP,2*raioP);
+  
   //Movimentação ellipse
   if(keyIsDown(LEFT_ARROW) && x >= 30){
     x -= 5;
@@ -46,12 +56,26 @@ function draw() {
       estadoDisparo = false
     }
   }
- 
+  
+  //Aproximaçao dos objetos
+  ellipse(xi,yi,50,50)
+  if( dist(x,y,xi,yi) < raioP + raioI){
+     vidas--;
+     }
+  
+  
   square(x0, y0, 40);
   //Movimentação Quadrado1
   x0 += 5;
   if(x0 > 500){
     x0 = -random(600);
     y0 = random(360)
-  }  
+  }
+  
+  //Pontuação
+  fill(0, 102, 153);
+  textSize(18);
+  text("Vidas:" + vidas, 10, 30);
+  text("Pontuação:" + pont, 200, 30);
+  text("Nivel:" + nivel, 400, 30);
 }
