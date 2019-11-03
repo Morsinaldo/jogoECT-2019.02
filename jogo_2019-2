@@ -1,45 +1,57 @@
 //Celi Beatriz Costa Lopes
 //Morsinaldo de Azevedo Medeiros
-//Etapa 5 e 6
 
+//Jogador
 var x = 50;
 var y = 50;
-var x0 = 0;
-var y0 = 30;
-var xi = 150;
-var yi = 150;
-var cont = 0;
+
+//Disparo
 var xd = 0;
 var yd = 0;
 var estadoDisparo = false;
+
+//Pontuação
 var vidas = 3;
 var pont = 0;
 var nivel = 1;
-var raioP = 25
+var barreiraPontos = 7
+
+var raioP = 25;
 var raioI = 28;
+
+//Asteroides
+var qtnObjetos = 10;
+var vx0 = [];
+var vy0 = [];
 
 
 function setup() {
-  createCanvas(500,500);
+  createCanvas(500, 500);
+  
+  //Gerando os asteroides
+  for(var i = 0; i < qtnObjetos; i++){
+    vx0[i] = random(0,500);
+    vy0[i] = -random(0,1000);
+  }
+  
 }
-
 
 function draw() {
   background(220);
-  
+    
+  //Jogador principal
   ellipse(x,y, 2*raioP,2*raioP);
-  
   //Movimentação ellipse
   if(keyIsDown(LEFT_ARROW) && x >= 30){
     x -= 5;
   }
-  if(keyIsDown(RIGHT_ARROW) && x <= 370){
+  if(keyIsDown(RIGHT_ARROW) && x <= 470){
     x += 5;
   }
   if(keyIsDown(UP_ARROW) && y >= 30){
     y -= 5;
   }
-  if(keyIsDown(DOWN_ARROW) && y <= 370){
+  if(keyIsDown(DOWN_ARROW) && y <= 470){
     y += 5;
   }
   
@@ -51,25 +63,10 @@ function draw() {
   }
   if(estadoDisparo){
     ellipse(xd,yd - 30,4,4);
-    yd -= 10
+    yd -= 10;
     if(yd < 0){
       estadoDisparo = false
     }
-  }
-  
-  //Aproximaçao dos objetos
-  ellipse(xi,yi,50,50)
-  if( dist(x,y,xi,yi) < raioP + raioI){
-     vidas--;
-     }
-  
-  
-  square(x0, y0, 40);
-  //Movimentação Quadrado1
-  x0 += 5;
-  if(x0 > 500){
-    x0 = -random(600);
-    y0 = random(360)
   }
   
   //Pontuação
@@ -78,4 +75,56 @@ function draw() {
   text("Vidas:" + vidas, 10, 30);
   text("Pontuação:" + pont, 200, 30);
   text("Nivel:" + nivel, 400, 30);
+  
+  //Mudanca de nivel
+  if(pont > barreiraPontos && nivel <= 5){
+    barreiraPontos += 7;
+    nivel++;
+    qtnObjetos += 2
+    //Gerando os asteroides
+    for(var i = 0; i < qtnObjetos; i++){
+      vx0[i] = random(0,500);
+      vy0[i] = -random(0,1000);
+    }
+  }
+  
+  //Asteroides
+  /*
+  if(nivel == 1){
+    qtnObjetos = 10
+  } else if(nivel == 2){
+    qtnObjetos = 12;
+  } else if(nivel == 3){
+    qtnObjetos = 14;
+  } else if(nivel == 4){
+    qtnObjetos = 16;
+  } else if(nivel == 5){
+    qtnObjetos = 18;
+  }
+  */
+  
+  for(var i = 0; i < qtnObjetos; i++){
+      ellipse(vx0[i],vy0[i], 20, 20)
+    }
+
+    for(var i = 0; i < qtnObjetos; i++){
+      vy0[i] += 1;
+    }
+  
+  //Perca de vidas
+  for(var i = 0; i < qtnObjetos; i++){
+    if(dist(x,y,vx0[i],vy0[i]) < raioP + 28){
+      vidas--;
+      vx0[i] = 600;
+    }
+  }
+  
+  //Ganho de pontos
+  for(var i = 0; i < qtnObjetos; i++){
+    if(dist(xd,yd,vx0[i],vy0[i]) < 32){
+      pont++;
+      vx0[i] = 600;
+      estadoDisparo = false;
+    }
+  }
 }
