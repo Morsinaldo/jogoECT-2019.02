@@ -2,129 +2,229 @@
 //Morsinaldo de Azevedo Medeiros
 
 //Jogador
-var x = 50;
-var y = 50;
+var xJogador = 200;
+var yJogador = 330;
+var raioJogador = 25;
 
 //Disparo
-var xd = 0;
-var yd = 0;
-var estadoDisparo = false;
-
-//Pontuação
-var vidas = 3;
-var pont = 0;
-var nivel = 1;
-var barreiraPontos = 7
-
-var raioP = 25;
-var raioI = 28;
+var xdispJogador;
+var ydispJogador;
+var disparo = false;
+var qtnObjetos = 6
+var raioDisparo = 2.5;
 
 //Asteroides
-var qtnObjetos = 10;
-var vx0 = [];
-var vy0 = [];
+var xdispInimigo;
+var ydispInimigo;
+var xe = [];   
+var ye = [];
+var raioInimigo = 25;
 
+//Pontuaçao
+var life = 5;
+var score = 0;
+var level = 1;
+
+var cont = 0;
+var tela = 1;
+
+//Imagem
+let imgNave;
+function preload(){
+  imgNave = loadImage('Nave-teste.png');
+  imgSpace = loadImage('space.jpg')
+}
 
 function setup() {
   createCanvas(500, 500);
-  
-  //Gerando os asteroides
-  for(var i = 0; i < qtnObjetos; i++){
-    vx0[i] = random(0,500);
-    vy0[i] = -random(0,1000);
-  }
-  
+ 
+   for (cont = 0; cont < qtnObjetos; cont++){
+    xe[cont] = random(30, 470);
+    ye[cont] = -random(0, 500);
+ }
 }
 
-function draw() {
-  background(220);
+ function draw() {
+  
+   //Tela 1
+  if (tela == 1){
+   background(0);
+  textSize(20);
+  fill(255, 255, 0);
+  text("METEOR RAIN", 170, 90);
+  fill(255, 255, 255);
+  text("Destrua o maior número de meteoros", 90, 200);
+  text(" que conseguir!", 170, 220);  
+  text("As setas movimentam o personagem e", 85, 240);    
+  text("a tecla Control realiza o disparo.", 110, 260)
+  text("Aperte Enter para começar o jogo", 95, 350);
+  if (keyIsDown(ENTER)){
+    tela = 2;  
+     } 
+  }
+   
+  //Tela 2
+  if (tela == 2){ 
     
-  //Jogador principal
-  ellipse(x,y, 2*raioP,2*raioP);
-  //Movimentação ellipse
-  if(keyIsDown(LEFT_ARROW) && x >= 30){
-    x -= 5;
-  }
-  if(keyIsDown(RIGHT_ARROW) && x <= 470){
-    x += 5;
-  }
-  if(keyIsDown(UP_ARROW) && y >= 30){
-    y -= 5;
-  }
-  if(keyIsDown(DOWN_ARROW) && y <= 470){
-    y += 5;
-  }
+  background(0);
   
-  //Disparo
-  if(keyIsDown(CONTROL) && estadoDisparo == false){
-    xd = x;
-    yd = y;
-    estadoDisparo = true;
-  }
-  if(estadoDisparo){
-    ellipse(xd,yd - 30,4,4);
-    yd -= 10;
-    if(yd < 0){
-      estadoDisparo = false
-    }
-  }
-  
-  //Pontuação
-  fill(0, 102, 153);
-  textSize(18);
-  text("Vidas:" + vidas, 10, 30);
-  text("Pontuação:" + pont, 200, 30);
-  text("Nivel:" + nivel, 400, 30);
-  
-  //Mudanca de nivel
-  if(pont > barreiraPontos && nivel <= 5){
-    barreiraPontos += 7;
-    nivel++;
-    qtnObjetos += 2
-    //Gerando os asteroides
-    for(var i = 0; i < qtnObjetos; i++){
-      vx0[i] = random(0,500);
-      vy0[i] = -random(0,1000);
-    }
-  }
-  
-  //Asteroides
-  /*
-  if(nivel == 1){
-    qtnObjetos = 10
-  } else if(nivel == 2){
-    qtnObjetos = 12;
-  } else if(nivel == 3){
-    qtnObjetos = 14;
-  } else if(nivel == 4){
-    qtnObjetos = 16;
-  } else if(nivel == 5){
-    qtnObjetos = 18;
-  }
-  */
-  
-  for(var i = 0; i < qtnObjetos; i++){
-      ellipse(vx0[i],vy0[i], 20, 20)
-    }
+  image(imgSpace, 250, 250, 500, 500);
+  fill(255, 255, 255);
+  textSize(20);
+  text("VIDAS: "+life, 10, 30);
+  text("PONTOS: "+score, 200, 30);
+  text("NÍVEL: "+level, 400, 30);
 
-    for(var i = 0; i < qtnObjetos; i++){
-      vy0[i] += 1;
-    }
-  
-  //Perca de vidas
-  for(var i = 0; i < qtnObjetos; i++){
-    if(dist(x,y,vx0[i],vy0[i]) < raioP + 28){
-      vidas--;
-      vx0[i] = 600;
+  //Fazendo o jogador aparecer
+  ellipse(xJogador, yJogador, 2*raioJogador, 2*raioJogador);
+    imageMode(CENTER);
+    image(imgNave, xJogador, yJogador);
+
+   
+  //Movimentação do jogador
+  if (keyIsDown(RIGHT_ARROW)){
+    xJogador += 3;  
+  }
+
+  if (keyIsDown(LEFT_ARROW)){  
+    xJogador -= 3;
+  }
+
+  if (keyIsDown(UP_ARROW)){
+    yJogador -= 3;
+  }  
+
+  if (keyIsDown(DOWN_ARROW)){
+    yJogador += 3;
+  }
+   
+  //Disparo do Jogador
+  if (keyIsDown(CONTROL) && !disparo){
+    xdispJogador = xJogador; 
+    ydispJogador = yJogador;
+    disparo = true
+
+  }
+
+  if (disparo == true){
+    ellipse(xdispJogador, ydispJogador, 2*raioDisparo, 2*raioDisparo);
+    ydispJogador = ydispJogador - 8;
+    //Inicio (Distancia entre disparo e inimigo) 
+    for (cont = 0; cont < 10; cont++){ 
+      if (dist(xe[cont], ye[cont], xdispJogador, ydispJogador) < raioDisparo + raioInimigo){
+         score = score + 20;
+         xe[cont] = random(30, 470);
+          ye[cont] = -random(0, 1000);
+         disparo = false;
+      }
+    }       
+    if(ydispJogador < 0){
+        disparo = false;
     }
   }
   
-  //Ganho de pontos
-  for(var i = 0; i < qtnObjetos; i++){
-    if(dist(xd,yd,vx0[i],vy0[i]) < 32){
-      pont++;
-      vx0[i] = 600;
-      estadoDisparo = false;
-    }
+  //Inicio (Inimigo) 
+  for (cont = 0; cont < 10; cont++){ 
+  ellipse( xe[cont], ye[cont], 2*raioInimigo, 2*raioInimigo)//Inimigo
+  ye[cont] = ye[cont] + 0.7;
+  
+   
+  if ( ye[cont] > 420){
+    xe[cont] = random(30, 470);
+    ye[cont] = -random(0, 1000);
   }
+  //Fim
+  
+  //Inicio (Distancia entre jogador e inimigo)  
+  if (dist(xJogador, yJogador, xe[cont], ye[cont]) < raioJogador + raioInimigo){
+    xJogador = 200;
+    yJogador = 330;
+    life = life - 1;
+    xe[cont] = random(30, 470);
+    ye[cont] = -random(0, 1000);
+   }    
+
 }
+
+  //Inicio (Definir o score e o nivel)
+  for (cont = 0; cont < qtnObjetos; cont++){ 
+   if (score >= 200 && score < 400){
+    level = 2;
+    ye[cont] = ye[cont] + 0.8;
+     qtnObjetos = 8
+  } 
+   if (score >= 400 & score < 600){
+    level = 3;
+    ye[cont] = ye[cont] + 0.85;
+    qtnObjetos = 9;
+  }
+   if (score >= 600 & score < 800){  
+    level = 4;
+    ye[cont] = ye[cont] + 0.90; 
+    qtnObjetos = 10;
+  }
+  if (score >= 800){  
+    level = 5;
+    ye[cont] = ye[cont] + 1;
+    qtnObjetos = 12
+  } 
+ }
+ 
+  
+  if(life == 0){
+    tela = 3;
+  }
+  if(score >= 1000){
+    tela = 4;
+  }
+ }
+   
+  //Tela 4
+  if (tela == 3){
+  background(0);
+  textSize(20);
+  fill(255, 0, 0);
+  text("GAMER OVER!", 130, 50);
+  fill(255, 255, 255);  
+  text("Você falhou!", 140, 100);
+  text("Aperte Enter para jogar novamente", 32, 350);
+  text("Vidas: "+life, 160, 195);
+  text("Pontos: "+score, 160, 220);
+  text("Nível: "+level, 160, 245);
+  if (keyIsDown(ENTER)){
+    tela = 2; 
+    life = 5; 
+    score = 0;
+    level = 1;
+    xe[cont] = random(30, 470);
+    ye[cont] = -random(0, 1000);  
+    xtut2 = 280;
+   }
+  }
+   
+   
+  //Tela 4
+  if (tela == 4){
+  background(0);
+  textSize(20);
+  fill(0, 255, 0);
+  text("YOU WIN!", 140, 50);
+  fill(255, 255, 255);
+  text("Você salvou o planeta!", 120, 100);
+  text("Vidas: "+life, 180, 195);
+  text("Pontos: "+score, 180, 220);
+  text("Nível: "+level, 180, 245);
+  text("Aperte ENTER para jogar novamente", 32, 350);
+  
+    if (keyIsDown(ENTER)){
+    tela = 2; 
+    life = 5; 
+    score = 0;
+    level = 1;
+    xe[cont] = random(30, 470);
+    ye[cont] = -random(0, 1000); 
+  
+   }
+  }
+   
+}  
