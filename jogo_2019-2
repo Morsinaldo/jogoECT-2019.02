@@ -9,39 +9,38 @@ var raioJogador = 25;
 //Disparo
 var xdispJogador;
 var ydispJogador;
-var disparo = false;
+var estadoDisparo = false;
 var qtnObjetos = 6
 var raioDisparo = 2.5;
 
 //Asteroides
-var xdispInimigo;
-var ydispInimigo;
-var xe = [];   
-var ye = [];
+var xAsteroide = [];   
+var yAsteroide = [];
 var raioInimigo = 25;
 
 //Pontuaçao
-var life = 5;
-var score = 0;
-var level = 1;
+var vida = 5;
+var pont = 0;
+var nivel = 1;
 
 var cont = 0;
 var tela = 1;
 
 //Imagem
-let imgNave;
+var imgNave;
 function preload(){
   imgNave = loadImage('Nave-teste.png');
   imgSpace = loadImage('space.jpg')
+  imgAsteroid = loadImage('asteroid.png')
 }
 
 function setup() {
   createCanvas(500, 500);
  
    for (cont = 0; cont < qtnObjetos; cont++){
-    xe[cont] = random(30, 470);
-    ye[cont] = -random(0, 500);
- }
+    xAsteroide[cont] = random(30, 470);
+    yAsteroide[cont] = -random(0, 500);
+   }
 }
 
  function draw() {
@@ -71,133 +70,132 @@ function setup() {
   image(imgSpace, 250, 250, 500, 500);
   fill(255, 255, 255);
   textSize(20);
-  text("VIDAS: "+life, 10, 30);
-  text("PONTOS: "+score, 200, 30);
-  text("NÍVEL: "+level, 400, 30);
+  text("VIDAS: "+vida, 10, 30);
+  text("PONTOS: "+pont, 200, 30);
+  text("NÍVEL: "+nivel, 400, 30);
 
-  //Fazendo o jogador aparecer
+  //Brotando o jogador na tela
   ellipse(xJogador, yJogador, 2*raioJogador, 2*raioJogador);
     imageMode(CENTER);
     image(imgNave, xJogador, yJogador);
 
    
   //Movimentação do jogador
-  if (keyIsDown(RIGHT_ARROW)){
-    xJogador += 3;  
+  if (keyIsDown(RIGHT_ARROW) && xJogador <= 460){
+    xJogador += 4;  
   }
 
-  if (keyIsDown(LEFT_ARROW)){  
-    xJogador -= 3;
+  if (keyIsDown(LEFT_ARROW) && xJogador >= 30){  
+    xJogador -= 4;
   }
 
-  if (keyIsDown(UP_ARROW)){
-    yJogador -= 3;
+  if (keyIsDown(UP_ARROW) && yJogador >= 30){
+    yJogador -= 4;
   }  
 
-  if (keyIsDown(DOWN_ARROW)){
-    yJogador += 3;
+  if (keyIsDown(DOWN_ARROW) && yJogador <= 470){
+    yJogador += 4;
   }
    
   //Disparo do Jogador
-  if (keyIsDown(CONTROL) && !disparo){
+  if (keyIsDown(CONTROL) && estadoDisparo == false){
     xdispJogador = xJogador; 
     ydispJogador = yJogador;
-    disparo = true
+    estadoDisparo = true
 
   }
 
-  if (disparo == true){
+  if (estadoDisparo == true){
     ellipse(xdispJogador, ydispJogador, 2*raioDisparo, 2*raioDisparo);
     ydispJogador = ydispJogador - 8;
     //Inicio (Distancia entre disparo e inimigo) 
     for (cont = 0; cont < 10; cont++){ 
-      if (dist(xe[cont], ye[cont], xdispJogador, ydispJogador) < raioDisparo + raioInimigo){
-         score = score + 20;
-         xe[cont] = random(30, 470);
-          ye[cont] = -random(0, 1000);
-         disparo = false;
+      if (dist(xAsteroide[cont], yAsteroide[cont], xdispJogador, ydispJogador) < raioDisparo + raioInimigo){
+         pont += 20;
+         xAsteroide[cont] = random(30, 470);
+          yAsteroide[cont] = -random(0, 1000);
+         estadoDisparo = false;
       }
     }       
     if(ydispJogador < 0){
-        disparo = false;
+        estadoDisparo = false;
     }
   }
   
-  //Inicio (Inimigo) 
+  //Inimigo
   for (cont = 0; cont < 10; cont++){ 
-  ellipse( xe[cont], ye[cont], 2*raioInimigo, 2*raioInimigo)//Inimigo
-  ye[cont] = ye[cont] + 0.7;
-  
+  imageMode(CENTER);  
+  image(imgAsteroid, xAsteroide[cont], yAsteroide[cont], 65, 65);
+  yAsteroide[cont] += 0.7;
    
-  if ( ye[cont] > 420){
-    xe[cont] = random(30, 470);
-    ye[cont] = -random(0, 1000);
-  }
-  //Fim
+    if (yAsteroide[cont] > 520){
+      xAsteroide[cont] = random(30, 470);
+      yAsteroide[cont] = -random(0, 1000);
+    }
   
-  //Inicio (Distancia entre jogador e inimigo)  
-  if (dist(xJogador, yJogador, xe[cont], ye[cont]) < raioJogador + raioInimigo){
-    xJogador = 200;
-    yJogador = 330;
-    life = life - 1;
-    xe[cont] = random(30, 470);
-    ye[cont] = -random(0, 1000);
-   }    
+    //Distancia entre jogador e o asteroide
+    if (dist(xJogador, yJogador, xAsteroide[cont], yAsteroide[cont]) < raioJogador + raioInimigo){
+      xJogador = 250;
+      yJogador = 430;
+      vida--;
+      xAsteroide[cont] = random(30, 470);
+      yAsteroide[cont] = -random(0, 1000);
+     }    
 
-}
+  }
 
-  //Inicio (Definir o score e o nivel)
+  //Inicio (Definir a pontuação e o nivel)
   for (cont = 0; cont < qtnObjetos; cont++){ 
-   if (score >= 200 && score < 400){
-    level = 2;
-    ye[cont] = ye[cont] + 0.8;
+   if (pont >= 200 && pont < 400){
+    nivel = 2;
+    yAsteroide[cont] = yAsteroide[cont] + 0.8;
      qtnObjetos = 8
   } 
-   if (score >= 400 & score < 600){
-    level = 3;
-    ye[cont] = ye[cont] + 0.85;
+   if (pont >= 400 & pont < 600){
+    nivel = 3;
+    yAsteroide[cont] = yAsteroide[cont] + 0.85;
     qtnObjetos = 9;
   }
-   if (score >= 600 & score < 800){  
-    level = 4;
-    ye[cont] = ye[cont] + 0.90; 
+   if (pont >= 600 & pont < 800){  
+    nivel = 4;
+    yAsteroide[cont] = yAsteroide[cont] + 0.90; 
     qtnObjetos = 10;
   }
-  if (score >= 800){  
-    level = 5;
-    ye[cont] = ye[cont] + 1;
+  if (pont >= 800){  
+    nivel = 5;
+    yAsteroide[cont] = yAsteroide[cont] + 1;
     qtnObjetos = 12
   } 
  }
  
   
-  if(life == 0){
+  if(vida == 0){
     tela = 3;
   }
-  if(score >= 1000){
+  if(pont >= 1000){
     tela = 4;
   }
  }
    
-  //Tela 4
+  //Tela 3
   if (tela == 3){
   background(0);
   textSize(20);
   fill(255, 0, 0);
-  text("GAMER OVER!", 130, 50);
+  text("GAMER OVER!", 170, 50);
   fill(255, 255, 255);  
-  text("Você falhou!", 140, 100);
-  text("Aperte Enter para jogar novamente", 32, 350);
-  text("Vidas: "+life, 160, 195);
-  text("Pontos: "+score, 160, 220);
-  text("Nível: "+level, 160, 245);
+  text("Você falhou!", 175, 100);
+  text("Aperte Enter para jogar novamente", 90, 350);
+  text("Vidas: "+vida, 180, 195);
+  text("Pontos: "+pont, 180, 220);
+  text("Nível: "+nivel, 180, 245);
   if (keyIsDown(ENTER)){
     tela = 2; 
-    life = 5; 
-    score = 0;
-    level = 1;
-    xe[cont] = random(30, 470);
-    ye[cont] = -random(0, 1000);  
+    vida = 5; 
+    pont = 0;
+    nivel = 1;
+    xAsteroide[cont] = random(30, 470);
+    yAsteroide[cont] = -random(0, 1000);  
     xtut2 = 280;
    }
   }
@@ -208,23 +206,22 @@ function setup() {
   background(0);
   textSize(20);
   fill(0, 255, 0);
-  text("YOU WIN!", 140, 50);
+  text("YOU WIN!", 170, 50);
   fill(255, 255, 255);
-  text("Você salvou o planeta!", 120, 100);
-  text("Vidas: "+life, 180, 195);
-  text("Pontos: "+score, 180, 220);
-  text("Nível: "+level, 180, 245);
-  text("Aperte ENTER para jogar novamente", 32, 350);
+  text("Você salvou o planeta!", 150, 100);
+  text("Vidas: "+vida, 180, 195);
+  text("Pontos: "+pont, 180, 220);
+  text("Nível: "+nivel, 180, 245);
+  text("Aperte ENTER para jogar novamente", 90, 350);
   
     if (keyIsDown(ENTER)){
     tela = 2; 
-    life = 5; 
-    score = 0;
-    level = 1;
-    xe[cont] = random(30, 470);
-    ye[cont] = -random(0, 1000); 
+    vida = 5; 
+    pont = 0;
+    nivel = 1;
+    xAsteroide[cont] = random(30, 470);
+    yAsteroide[cont] = -random(0, 1000); 
   
    }
   }
-   
-}  
+}
